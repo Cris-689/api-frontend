@@ -36,7 +36,7 @@ spec:
         NAMESPACE = "frontend-prod"
         NEXT_TELEMETRY_DISABLED = "1"
     }
-
+    //a
     stages {
         stage('Build & Push with Kaniko') {
             steps {
