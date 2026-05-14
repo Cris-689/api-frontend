@@ -31,7 +31,6 @@ spec:
     }
 
     environment {
-        # Configuración específica para el frontend
         IMAGE_NAME = "uzbuzbiz/next-frontend"
         HELM_RELEASE_NAME = "frontend-release"
         NAMESPACE = "frontend-prod"
