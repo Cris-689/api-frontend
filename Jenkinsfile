@@ -45,17 +45,13 @@ spec:
                                                     usernameVariable: 'DOCKER_USER', 
                                                     passwordVariable: 'DOCKER_PASS')]) {
                         script {
-                            // Autenticación en el registro
                             sh """
                             echo "{\\\"auths\\\":{\\\"https://index.docker.io/v1/\\\":{\\\"auth\\\":\\\"\$(echo -n \${DOCKER_USER}:\${DOCKER_PASS} | base64)\\\"}}}" > /kaniko/.docker/config.json
-                            
-                            # Construcción de la imagen
-                            # IMPORTANTE: Se han añadido comillas dobles alrededor de \${WORKSPACE}
-                            # Esto previene fallos de ejecución si el nombre del Job en Jenkins contiene espacios.
-                            /kaniko/executor --context "\${WORKSPACE}" \
-                                --dockerfile "\${WORKSPACE}/Dockerfile" \
-                                --destination \${IMAGE_NAME}:\${env.BUILD_ID} \
-                                --destination \${IMAGE_NAME}:latest \
+
+                            /kaniko/executor --context "${WORKSPACE}" \
+                                --dockerfile "${WORKSPACE}/Dockerfile" \
+                                --destination ${IMAGE_NAME}:${env.BUILD_ID} \
+                                --destination ${IMAGE_NAME}:latest \
                                 --cache=true \
                                 --cache-dir=/cache \
                                 --snapshot-mode=redo \
