@@ -1,0 +1,19 @@
+# .dockerignore
+# Ignorar dependencias locales y builds previos
+node_modules
+npm-debug.log
+.next/
+out/
+build/
+dist/
+
+# Ignorar archivos de control de versiones y configuración local
+.git
+.gitignore
+.env*.local
+
+# Ignorar manifiestos de infraestructura (Kaniko no necesita Helm ni el pipeline para compilar Next.js)
+helm/
+Jenkinsfile
+k8s/
+README.md

@@ -1,0 +1,58 @@
+# Aumentar réplicas asegura alta disponibilidad; requiere configuración de afinidad en deployment.yaml para distribuir pods entre nodos.
+replicaCount: 2
+
+image:
+  repository: uzbuzbiz/next-frontend
+  pullPolicy: Always # Cambiar a IfNotPresent si se gestiona el caché del clúster rigurosamente, pero Always previene bloqueos por tags mutables.
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: public
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # Optimización de caché de NGINX para assets estáticos de Next.js (_next/static)
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      location ~* ^/_next/static/ {
+        expires 1y;
+        access_log off;
+      }
+  hosts:
+    - host: uzbuzbiz.es
+      paths:
+        - path: /
+          pathType: Prefix
+          isApi: false
+  tls:
+    - secretName: frontend-uzbuzbiz-tls
+      hosts:
+        - uzbuzbiz.es
+
+# Configuración de contexto de seguridad estricto para Kubernetes
+security:
+  runAsUser: 1001 # Coincide con el UID del Dockerfile (nextjs)
+  fsGroup: 1001
+  runAsNonRoot: true
+  # readOnlyRootFilesystem previene escritura en el contenedor. Next.js necesita volumenes temporales para caché.
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
+# Volumenes requeridos si readOnlyRootFilesystem está activo (deberán ser mapeados en deployment.yaml como emptyDir)
+# Next.js escribe telemetría o caché en /tmp o .next/cache
+volumeMounts:
+  - mountPath: /tmp
+    name: tmp-volume
+
+# Recursos adaptados al consumo de Next.js (Server Side Rendering consume más memoria que APIs estándar).
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"

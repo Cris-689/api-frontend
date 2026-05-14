@@ -1,0 +1,8 @@
+apiVersion: v2
+name: next-frontend
+description: Helm chart para el despliegue del frontend Next.js en MicroK8s
+type: application
+# La versión del chart debe evolucionar con cambios estructurales de infraestructura
+version: 0.1.0
+# appVersion se sobrescribe dinámicamente en el Jenkinsfile con el env.BUILD_ID
+appVersion: "latest"
