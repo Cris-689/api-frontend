@@ -1,13 +1,14 @@
 # --- FASE 1: DEPENDENCIAS ---
-# Utilizamos una imagen Alpine ligera y fijamos la versión mayor para evitar regresiones.
 FROM node:20-alpine AS deps
-# libc6-compat es necesario para algunos binarios nativos utilizados por dependencias de Node.js en Alpine.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-# npm ci garantiza instalaciones deterministas basadas en el lockfile, crítico para pipelines.
-RUN npm ci
+# Usamos el comodín * para importar el lockfile si existe, pero sin hacerlo obligatorio
+COPY package*.json ./
+
+# Forzamos la limpieza de la caché interna de npm para evitar corrupciones previas
+# y ejecutamos npm install para que el árbol se resuelva nativamente en Alpine.
+RUN npm cache clean --force && npm install --no-fund --no-audit
 
 # --- FASE 2: CONSTRUCCIÓN ---
 FROM node:20-alpine AS builder
