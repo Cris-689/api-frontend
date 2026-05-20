@@ -14,7 +14,6 @@ spec:
       labels:
         app: {{ .Release.Name }}
     spec:
-      # Contexto de seguridad a nivel de Pod
       securityContext:
         runAsUser: {{ .Values.security.runAsUser }}
         fsGroup: {{ .Values.security.fsGroup }}
@@ -26,10 +25,18 @@ spec:
           ports:
             - containerPort: 3000
               name: http
-          # Contexto de seguridad a nivel de contenedor
           securityContext:
             readOnlyRootFilesystem: {{ .Values.security.readOnlyRootFilesystem }}
             allowPrivilegeEscalation: {{ .Values.security.allowPrivilegeEscalation }}
+          
+          # Inyección de variables de entorno en tiempo de ejecución (Runtime)
+          env:
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecrets.name }}
+                  key: {{ .Values.externalSecrets.key }}
+          
           resources:
             requests:
               memory: {{ .Values.resources.requests.memory }}
@@ -37,14 +44,12 @@ spec:
             limits:
               memory: {{ .Values.resources.limits.memory }}
               cpu: {{ .Values.resources.limits.cpu }}
-          # Liveness probe asegura que el contenedor se reinicie si el proceso de Node crashea
           livenessProbe:
             httpGet:
               path: /
               port: http
             initialDelaySeconds: 15
             periodSeconds: 20
-          # Readiness probe evita enviar tráfico hasta que Next.js esté listo para servir peticiones
           readinessProbe:
             httpGet:
               path: /
@@ -52,14 +57,11 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
           volumeMounts:
-            # Requerido por Next.js para escribir en .next/cache en tiempo de ejecución
             - mountPath: /app/.next/cache
               name: next-cache
-            # Requerido por el sistema base Alpine/Node para archivos temporales del SO
             - mountPath: /tmp
               name: tmp-volume
       volumes:
-        # Volúmenes efímeros mapeados a la memoria/disco del nodo esclavo
         - name: next-cache
           emptyDir: {}
         - name: tmp-volume

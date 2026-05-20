@@ -32,7 +32,10 @@ ingress:
     - secretName: frontend-uzbuzbiz-tls
       hosts:
         - uzbuzbiz.es
-
+externalSecrets:
+  enabled: true
+  name: "frontend-secrets"
+  key: "ADMIN_PASSWORD"
 # Configuración de contexto de seguridad estricto para Kubernetes
 security:
   runAsUser: 1001 # Coincide con el UID del Dockerfile (nextjs)
