@@ -17,3 +17,16 @@ helm/
 Jenkinsfile
 k8s/
 README.md
+# .dockerignore
+node_modules
+npm-debug.log
+.next/
+out/
+build/
+dist/
+.git
+.gitignore
+.env*.local
+helm/
+Jenkinsfile
+README.md
