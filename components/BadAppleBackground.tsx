@@ -19,77 +19,51 @@ export default function BadAppleBackground() {
   if (!init) return null;
 
   return (
-    <Particles
-      id="tsparticles"
-      options={{
-        fullScreen: {
-          enable: true,
-          zIndex: 0, 
-        },
-        background: {
-          color: "transparent",
-        },
-        particles: {
-          number: {
-            value: 40,
-            density: {
-              enable: true,
-              width: 800,
-            },
-          },
-          shape: {
-            type: "image",
-            options: {
-              image: {
-                src: "/apple-white.svg",
-                width: 24,
-                height: 24,
+    /* 🔥 EL FIX ARQUITECTÓNICO: Un contenedor fixed de Tailwind que fuerza la capa 0 */
+    <div className="fixed inset-0 z-0 pointer-events-none">
+      <Particles
+        id="tsparticles"
+        className="w-full h-full absolute inset-0"
+        options={{
+          // Desactivamos el fullscreen automático que a veces falla en Next.js
+          fullScreen: { enable: false }, 
+          background: { color: "transparent" },
+          particles: {
+            number: { value: 40 },
+            color: { value: "#ffffff" }, // Forzamos el color blanco
+            shape: {
+              type: ["image", "circle"], 
+              options: {
+                image: {
+                  src: "/apple-white.svg",
+                  width: 24,
+                  height: 24,
+                },
               },
             },
-          },
-          opacity: {
-            value: { min: 0.1, max: 0.5 },
-          },
-          size: {
-            value: { min: 10, max: 25 },
-          },
-          move: {
-            enable: true,
-            direction: "bottom",
-            speed: { min: 1, max: 3 },
-            straight: false,
-            outModes: {
-              default: "out",
+            opacity: {
+              // Subimos la opacidad casi al máximo para que sean innegablemente visibles
+              value: { min: 0.5, max: 1 }, 
             },
-          },
-          rotate: {
-            value: { min: 0, max: 360 },
-            direction: "random",
-            animation: {
+            size: {
+              value: { min: 15, max: 30 },
+            },
+            move: {
               enable: true,
-              speed: 5,
+              direction: "bottom",
+              speed: { min: 2, max: 4 },
+              straight: false,
+              outModes: { default: "out" },
+            },
+            rotate: {
+              value: { min: 0, max: 360 },
+              direction: "random",
+              animation: { enable: true, speed: 5 },
             },
           },
-        },
-        interactivity: {
-          events: {
-            onHover: {
-              enable: true,
-              mode: "bubble",
-            },
-            onClick: {
-              enable: true,
-              mode: "push",
-            },
-          },
-          modes: {
-            bubble: { distance: 200, size: 30, duration: 2, opacity: 0.8 },
-            push: { quantity: 4 },
-          },
-        },
-        detectRetina: true,
-      }}
-      className="pointer-events-none" 
-    />
+          detectRetina: true,
+        }}
+      />
+    </div>
   );
 }
