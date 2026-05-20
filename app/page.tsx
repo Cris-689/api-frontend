@@ -35,8 +35,7 @@ export default async function RootPage() {
   const latestImage = await getLatestImage();
 
   return (
-    <main className="min-h-screen bg-[#0a0a0f] text-gray-100 flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      
+    <main className="min-h-screen bg-transparent text-gray-100 flex flex-col items-center justify-center p-6 relative z-10 overflow-hidden">      
       {/* Elementos decorativos de fondo (Brillos morados) */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-900/20 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-800/10 rounded-full blur-[100px] -z-10 pointer-events-none"></div>

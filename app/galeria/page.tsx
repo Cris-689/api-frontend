@@ -26,7 +26,7 @@ export default async function GaleriaPage() {
   const sortedImages = [...images].sort((a, b) => b.id - a.id);
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-7xl relative">
+    <div className="container mx-auto px-4 py-12 max-w-7xl relative z-10 bg-transparent">
       
       <div className="mb-6">
         <Link 

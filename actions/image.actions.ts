@@ -78,3 +78,40 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
     };
   }
 }
+export async function deleteImageAction(id: number): Promise<{ success: boolean; message?: string; error?: string }> {
+  try {
+    // Usamos la URL interna de Kubernetes que ya validamos que funciona
+    const apiUrl = `http://api-release-service.api-prod.svc.cluster.local:3000/images/${id}`;
+    
+    // Recuperamos la clave maestra para poder borrar
+    const apiKey = process.env.UPLOAD_API_KEY; 
+
+    if (!apiKey) {
+      return { success: false, error: 'La API Key del servidor no está configurada.' };
+    }
+
+    const response = await fetch(apiUrl, {
+      method: 'DELETE',
+      headers: {
+        'x-api-key': apiKey,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.message || 'Error en el backend al eliminar la imagen');
+    }
+
+    // Esto hará que Next.js repinte la pantalla al instante sin que el usuario tenga que pulsar F5
+    revalidatePath('/galeria');
+    revalidatePath('/');
+
+    return { success: true, message: 'Imagen eliminada con éxito' };
+  } catch (error) {
+    console.error('[DELETE_ACTION_CRITICAL_ERROR]', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Error interno al conectar con el backend' 
+    };
+  }
+}

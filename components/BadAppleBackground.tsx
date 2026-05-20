@@ -9,7 +9,6 @@ export default function BadAppleBackground() {
   const [init, setInit] = useState(false);
 
   useEffect(() => {
-    // 🔥 FIX 2: Le decimos a TypeScript que 'engine' es exactamente de tipo 'Engine'
     initParticlesEngine(async (engine: Engine) => {
       await loadFull(engine);
     }).then(() => {
@@ -25,7 +24,7 @@ export default function BadAppleBackground() {
       options={{
         fullScreen: {
           enable: true,
-          zIndex: -50, 
+          zIndex: 0, 
         },
         background: {
           color: "transparent",
@@ -40,7 +39,6 @@ export default function BadAppleBackground() {
           },
           shape: {
             type: "image",
-            // 🔥 FIX 3: En la v3, la configuración de la imagen va dentro de 'options'
             options: {
               image: {
                 src: "/apple-white.svg",
