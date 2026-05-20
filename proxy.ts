@@ -1,11 +1,10 @@
+// proxy.ts
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/request';
+import type { NextRequest } from 'next/server'; 
 
-export function middleware(request: NextRequest) {
-  // Buscamos la cookie que usaremos como testigo de sesión
+export function proxy(request: NextRequest) {
   const sessionToken = request.cookies.get('session-token')?.value;
 
-  // Si no hay token, redirigimos al login arrastrando la ruta original como callback
   if (!sessionToken) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname);
@@ -15,7 +14,6 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// OBLIGATORIO: Definir estrictamente qué rutas pasan por este middleware
 export const config = {
   matcher: [
     '/galeria/:path*',
