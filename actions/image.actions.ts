@@ -19,7 +19,7 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
       return { success: false, error: 'El archivo y el nombre son obligatorios.' };
     }
 
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://api.uzbuzbiz.es'}/images/upload`;
+    const apiUrl = "http://api-release-service.api-prod.svc.cluster.local:3000/images/upload";
     const apiKey = apiKeyForm || process.env.UPLOAD_API_KEY; 
 
     if (!apiKey) {
