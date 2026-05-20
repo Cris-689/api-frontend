@@ -42,11 +42,12 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
       cleanFormData.append('descripcion', descripcion);
     }
 
-    console.log('--- DEPURACIÓN DE SUBIDA ---');
-    for (const [key, value] of cleanFormData.entries()) {
-      console.log(`${key}:`, value instanceof File ? `${value.name} (${value.size} bytes)` : value);
+    console.log('--- ENVIANDO PETICIÓN A:', apiUrl);
+    console.log('--- HEADERS:', { 'x-api-key': '***OCULTO***' });
+    
+    for (const pair of cleanFormData.entries()) {
+      console.log('Campo:', pair[0], typeof pair[1]);
     }
-    console.log('--- FIN DEPURACIÓN ---');
 
     const response = await fetch(apiUrl, {
       method: 'POST',
