@@ -1,30 +1,33 @@
 'use server';
 
-export async function uploadImageAction(formData: FormData) {
+export type UploadState = {
+  success: boolean;
+  message?: string;
+  error?: string;
+};
+
+export async function uploadImageAction(prevState: UploadState, formData: FormData): Promise<UploadState> {
   try {
     const file = formData.get('file') as File | null;
     const nombre = formData.get('nombre') as string | null;
 
-    if (!file || !nombre) {
+    if (!file || file.size === 0 || !nombre) {
       return { success: false, error: 'El archivo y el nombre son obligatorios.' };
     }
 
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://api.uzbuzbiz.es'}/images/upload`;
-    const apiKey = process.env.UPLOAD_API_KEY; // Variable secreta inyectada por K8s Secrets
+    const apiKey = process.env.UPLOAD_API_KEY; 
 
     if (!apiKey) {
-      throw new Error('API Key no configurada en el entorno.');
+      throw new Error('API Key no configurada en el servidor.');
     }
 
-    // Petición de servidor (Next.js) a servidor (NestJS)
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'x-api-key': apiKey,
-        // OJO: No establezcas 'Content-Type': 'multipart/form-data'. 
-        // fetch lo calcula automáticamente junto con los boundaries.
       },
-      body: formData, // Pasamos el FormData original directamente
+      body: formData, 
     });
 
     if (!response.ok) {
@@ -33,7 +36,7 @@ export async function uploadImageAction(formData: FormData) {
     }
 
     const data = await response.json();
-    return { success: true, data };
+    return { success: true, message: data.message || 'Imagen subida con éxito' };
   } catch (error) {
     console.error('[UPLOAD_ACTION_ERROR]', error);
     return { 
