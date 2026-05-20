@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';  
+import { revalidatePath } from 'next/cache';
 
 export type UploadState = {
   success: boolean;
@@ -26,9 +26,17 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
       return { success: false, error: 'Debes proporcionar una Clave de API para subir archivos.' };
     }
 
-    // 🔥 EL FIX: Creamos un FormData limpio y estricto para NestJS
     const cleanFormData = new FormData();
-    cleanFormData.append('file', file);
+    
+    // Rompemos el File de Next.js a bytes puros y lo convertimos en un Blob nativo.
+    // Esto evita que el fetch interno de Node.js se congele al intentar streamearlo.
+    const fileBytes = await file.arrayBuffer();
+    const fileBlob = new Blob([fileBytes], { type: file.type });
+    
+    // CRÍTICO: Hay que pasar explícitamente 'file.name' como tercer parámetro
+    // para que Multer en NestJS sepa cómo se llama el archivo.
+    cleanFormData.append('file', fileBlob, file.name);
+    
     cleanFormData.append('nombre', nombre);
     if (descripcion) {
       cleanFormData.append('descripcion', descripcion);
@@ -37,23 +45,26 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'x-api-key': apiKey, // La API Key va en los headers, como espera NestJS
+        'x-api-key': apiKey, 
       },
-      body: cleanFormData, // Mandamos el FormData limpio, sin rastros de Next.js
+      body: cleanFormData, 
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.message || 'Error al subir la imagen (¿Clave incorrecta?)');
+      // Capturamos la respuesta cruda del backend para ver qué falló realmente
+      const errorText = await response.text();
+      console.error('[NESTJS_REJECTED]', errorText);
+      throw new Error('Error en el backend al subir la imagen. (Ver consola del servidor)');
     }
 
-    const data = await response.json();
-
+    const data = JSON.parse(await response.text());
+    
+    // Purgamos la caché de la galería
     revalidatePath('/galeria');
-
+    
     return { success: true, message: data.message || 'Imagen subida con éxito' };
   } catch (error) {
-    console.error('[UPLOAD_ACTION_ERROR]', error);
+    console.error('[UPLOAD_ACTION_CRITICAL_ERROR]', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Error interno del servidor' 
