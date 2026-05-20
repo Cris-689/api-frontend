@@ -10,6 +10,7 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
   try {
     const file = formData.get('file') as File | null;
     const nombre = formData.get('nombre') as string | null;
+    const descripcion = formData.get('descripcion') as string | null;
     const apiKeyForm = formData.get('apiKey') as string | null;
 
     if (!file || file.size === 0 || !nombre) {
@@ -17,20 +18,26 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
     }
 
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://api.uzbuzbiz.es'}/images/upload`;
-    
-    // Usamos la clave del formulario, o caemos al entorno si está configurada
     const apiKey = apiKeyForm || process.env.UPLOAD_API_KEY; 
 
     if (!apiKey) {
       return { success: false, error: 'Debes proporcionar una Clave de API para subir archivos.' };
     }
 
+    // 🔥 EL FIX: Creamos un FormData limpio y estricto para NestJS
+    const cleanFormData = new FormData();
+    cleanFormData.append('file', file);
+    cleanFormData.append('nombre', nombre);
+    if (descripcion) {
+      cleanFormData.append('descripcion', descripcion);
+    }
+
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'x-api-key': apiKey,
+        'x-api-key': apiKey, // La API Key va en los headers, como espera NestJS
       },
-      body: formData, 
+      body: cleanFormData, // Mandamos el FormData limpio, sin rastros de Next.js
     });
 
     if (!response.ok) {
