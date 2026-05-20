@@ -22,9 +22,9 @@ async function getLatestImage(): Promise<ImageMetadata | null> {
     const images: ImageMetadata[] = await res.json();
     if (images.length === 0) return null;
     
-    // Suponiendo que el backend las devuelve ordenadas por ID de forma ascendente,
-    // tomamos la última del array. Si las devuelve descendentes, sería images[0].
-    return images[images.length - 1];
+    // El ID más alto (última subida) se coloca en la posición 0.
+    const sortedImages = [...images].sort((a, b) => b.id - a.id);
+    return sortedImages[0];
   } catch (error) {
     console.error('[LATEST_IMAGE_FETCH_ERROR]', error);
     return null;
