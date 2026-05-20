@@ -1,3 +1,4 @@
+import BadAppleBackground from '@/components/BadAppleBackground';
 import './globals.css';
 import { Inter } from 'next/font/google';
 
@@ -17,6 +18,7 @@ export default function RootLayout({
     <html lang="es">
       {/* Aplicamos el fondo oscuro y texto claro a nivel global */}
       <body className={`${inter.className} bg-[#0a0a0f] text-gray-100 min-h-screen antialiased`}>
+        <BadAppleBackground />
         {children}
       </body>
     </html>
