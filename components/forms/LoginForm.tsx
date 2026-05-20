@@ -4,47 +4,42 @@ import { useActionState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { loginAction } from '@/actions/auth.actions';
 
-const initialState = {
-  success: false,
-  error: '',
-};
+const initialState = { success: false, error: '' };
 
 export default function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/galeria';
-  
-  // React 19: useActionState maneja el estado, la mutación y la transición (isPending)
   const [state, formAction, isPending] = useActionState(loginAction, initialState);
 
   return (
-    // Ya no usamos onSubmit, inyectamos la action directamente en el form
     <form action={formAction} className="mt-8 space-y-6">
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
       
-      <div className="rounded-md shadow-sm -space-y-px">
-        <div>
-          <label htmlFor="password" className="sr-only">Contraseña</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-            placeholder="Contraseña de acceso"
-          />
-        </div>
+      <div>
+        <label htmlFor="password" className="sr-only">Contraseña</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          required
+          className="appearance-none rounded-xl relative block w-full px-4 py-3 bg-[#0a0a0f] border border-purple-500/30 placeholder-gray-500 text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+          placeholder="Contraseña de acceso..."
+        />
       </div>
 
-      {/* Mostramos el error si el server action falló */}
-      {state?.error && <p className="text-red-500 text-sm font-medium">{state.error}</p>}
+      {state?.error && (
+        <p className="text-red-400 text-sm font-medium text-center bg-red-900/20 py-2 rounded-lg border border-red-500/20">
+          {state.error}
+        </p>
+      )}
 
       <div>
         <button
           type="submit"
           disabled={isPending}
-          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50"
+          className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-purple-600 hover:bg-purple-500 shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:shadow-[0_0_25px_rgba(147,51,234,0.5)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0a0a0f] focus:ring-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isPending ? 'Verificando...' : 'Entrar'}
+          {isPending ? 'Verificando credenciales...' : 'Entrar'}
         </button>
       </div>
     </form>

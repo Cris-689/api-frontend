@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-// Asegúrate de que el backend exponga esta misma estructura
 interface ImageMetadata {
   id: number;
   nombre: string;
@@ -21,35 +20,42 @@ export default async function GaleriaPage() {
   const images = await getImages();
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Galería</h1>
+    <div className="container mx-auto px-4 py-12 max-w-7xl relative">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12">
+        <div>
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">Galería</h1>
+          <p className="text-gray-400 mt-2">Recursos visuales almacenados en el backend.</p>
+        </div>
         <Link 
           href="/upload" 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm"
+          className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-[0_0_20px_rgba(147,51,234,0.3)] transition-all transform hover:-translate-y-1"
         >
           + Nueva Imagen
         </Link>
       </div>
 
       {images.length === 0 ? (
-        <p className="text-center text-gray-500 py-12">No hay imágenes. Sube la primera.</p>
+        <div className="text-center py-20 border border-dashed border-purple-500/30 bg-[#13131a] rounded-2xl">
+          <p className="text-gray-400">No hay imágenes. Sube la primera para iluminar este espacio.</p>
+        </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {images.map((img) => (
-            <div key={img.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group">
-              <div className="relative aspect-square w-full bg-gray-100">
+            <div key={img.id} className="bg-[#13131a] rounded-xl border border-purple-500/20 hover:border-purple-500/60 overflow-hidden group hover:shadow-[0_0_30px_rgba(147,51,234,0.15)] transition-all duration-300">
+              <div className="relative aspect-square w-full bg-[#0a0a0f] overflow-hidden">
                 <Image
                   src={`https://api.uzbuzbiz.es/images/${img.id}`}
                   alt={img.nombre}
                   fill
-                  sizes="(max-width: 768px) 50vw, 25vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  loading="lazy"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#13131a] via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
-              <div className="p-4">
-                <p className="font-semibold text-gray-800 truncate">{img.nombre}</p>
-                <p className="text-xs text-gray-500 truncate mt-1">{img.filename}</p>
+              <div className="p-5">
+                <p className="font-bold text-gray-100 truncate">{img.nombre}</p>
+                <p className="text-xs text-purple-400/70 truncate mt-1">{img.filename}</p>
               </div>
             </div>
           ))}

@@ -10,16 +10,19 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
   try {
     const file = formData.get('file') as File | null;
     const nombre = formData.get('nombre') as string | null;
+    const apiKeyForm = formData.get('apiKey') as string | null;
 
     if (!file || file.size === 0 || !nombre) {
       return { success: false, error: 'El archivo y el nombre son obligatorios.' };
     }
 
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://api.uzbuzbiz.es'}/images/upload`;
-    const apiKey = process.env.UPLOAD_API_KEY; 
+    
+    // Usamos la clave del formulario, o caemos al entorno si está configurada
+    const apiKey = apiKeyForm || process.env.UPLOAD_API_KEY; 
 
     if (!apiKey) {
-      throw new Error('API Key no configurada en el servidor.');
+      return { success: false, error: 'Debes proporcionar una Clave de API para subir archivos.' };
     }
 
     const response = await fetch(apiUrl, {
@@ -32,7 +35,7 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.message || 'Error al subir la imagen al backend');
+      throw new Error(errorData?.message || 'Error al subir la imagen (¿Clave incorrecta?)');
     }
 
     const data = await response.json();
