@@ -1,5 +1,7 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';  
+
 export type UploadState = {
   success: boolean;
   message?: string;
@@ -46,6 +48,9 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
     }
 
     const data = await response.json();
+
+    revalidatePath('/galeria');
+
     return { success: true, message: data.message || 'Imagen subida con éxito' };
   } catch (error) {
     console.error('[UPLOAD_ACTION_ERROR]', error);

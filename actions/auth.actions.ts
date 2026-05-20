@@ -13,7 +13,7 @@ export async function loginAction(prevState: AuthState, formData: FormData): Pro
   const password = formData.get('password') as string;
   const callbackUrl = formData.get('callbackUrl') as string || '/galeria';
 
-  const adminPassword = process.env.ADMIN_PASSWORD || 'uzbuzbiz2024';
+  const adminPassword = process.env.ADMIN_PASSWORD;
 
   if (password !== adminPassword) {
     // Retornamos el nuevo estado con el error
