@@ -36,7 +36,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.externalSecrets.name }}
                   key: {{ .Values.externalSecrets.key }}
-          
+            - name: UPLOAD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalSecrets.name }}
+                  key: {{ .Values.externalSecrets.apiKey }}
           resources:
             requests:
               memory: {{ .Values.resources.requests.memory }}
