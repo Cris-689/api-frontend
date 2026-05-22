@@ -3,74 +3,47 @@
 import { useEffect, useState, useMemo } from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadFull } from "tsparticles";
-import type { Engine, ISourceOptions } from "@tsparticles/engine"; // Tipado estricto añadido
-
-let engineInitialized = false;
 
 export default function BadAppleBackground() {
-  const [init, setInit] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (engineInitialized) {
-      setInit(true);
-      return;
-    }
-
-    initParticlesEngine(async (engine: Engine) => {
+    initParticlesEngine(async (engine) => {
       await loadFull(engine);
-    }).then(() => {
-      engineInitialized = true;
-      setInit(true);
-    });
+    })
+      .then(() => setIsReady(true))
+      .catch((err) => console.error("[PARTICLES_ERROR]", err));
   }, []);
 
-  const particlesOptions: ISourceOptions = useMemo(() => ({
-    fullScreen: { enable: false },
-    background: { color: { value: "transparent" } }, // Normalizado al type estándar
+  const options = useMemo(() => ({
+    fullScreen: { enable: true, zIndex: -1 },
+    background: { color: { value: "transparent" } },
     particles: {
-      number: { value: 40 },
+      number: { value: 30 },
       color: { value: "#ffffff" },
       shape: {
-        type: ["image", "circle"],
+        type: ["image", "circle"], 
         options: {
           image: {
             src: "/apple-white.svg",
-            width: 24,
-            height: 24,
+            width: 32,
+            height: 32,
           },
         },
       },
-      opacity: {
-        value: { min: 0.5, max: 1 },
-      },
-      size: {
-        value: { min: 15, max: 30 },
-      },
+      opacity: { value: { min: 0.3, max: 0.8 } },
+      size: { value: { min: 10, max: 20 } },
       move: {
         enable: true,
-        direction: "bottom",
-        speed: { min: 2, max: 4 },
-        straight: false,
-        outModes: { default: "out" },
-      },
-      rotate: {
-        value: { min: 0, max: 360 },
-        direction: "random",
-        animation: { enable: true, speed: 5 },
+        direction: "bottom" as const,
+        speed: { min: 1, max: 3 },
+        outModes: { default: "out" as const },
       },
     },
     detectRetina: true,
   }), []);
 
-  if (!init) return null;
+  if (!isReady) return null;
 
-  return (
-    <div className="fixed inset-0 z-0 pointer-events-none">
-      <Particles
-        id="tsparticles"
-        className="w-full h-full absolute inset-0"
-        options={particlesOptions}
-      />
-    </div>
-  );
+  return <Particles id="bad-apple-particles" options={options} />;
 }

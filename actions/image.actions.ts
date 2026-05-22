@@ -80,14 +80,14 @@ export async function uploadImageAction(prevState: UploadState, formData: FormDa
 }
 export async function deleteImageAction(id: number): Promise<{ success: boolean; message?: string; error?: string }> {
   try {
-    // Usamos la URL interna de Kubernetes que ya validamos que funciona
+    // Apuntamos directamente al servicio interno de Kubernetes
     const apiUrl = `http://api-release-service.api-prod.svc.cluster.local:3000/images/${id}`;
     
-    // Recuperamos la clave maestra para poder borrar
+    // Recuperamos la API Key inyectada en el pod
     const apiKey = process.env.UPLOAD_API_KEY; 
 
     if (!apiKey) {
-      return { success: false, error: 'La API Key del servidor no está configurada.' };
+      return { success: false, error: 'Falta configuración de API Key (UPLOAD_API_KEY) en el entorno del servidor.' };
     }
 
     const response = await fetch(apiUrl, {
@@ -99,10 +99,10 @@ export async function deleteImageAction(id: number): Promise<{ success: boolean;
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.message || 'Error en el backend al eliminar la imagen');
+      throw new Error(errorData?.message || `HTTP Error ${response.status}: El backend rechazó el borrado.`);
     }
 
-    // Esto hará que Next.js repinte la pantalla al instante sin que el usuario tenga que pulsar F5
+    // Purgamos la caché agresivamente para reflejar el cambio al instante
     revalidatePath('/galeria');
     revalidatePath('/');
 
@@ -111,7 +111,7 @@ export async function deleteImageAction(id: number): Promise<{ success: boolean;
     console.error('[DELETE_ACTION_CRITICAL_ERROR]', error);
     return { 
       success: false, 
-      error: error instanceof Error ? error.message : 'Error interno al conectar con el backend' 
+      error: error instanceof Error ? error.message : 'Error interno al conectar con el pod del backend' 
     };
   }
 }
