@@ -27,7 +27,7 @@ export default function BadAppleBackground() {
     appleImg.src = '/apple-white.svg';
 
     let particlesArray: Particle[] = [];
-    const numberOfParticles = 30;
+    const numberOfParticles = 30000;
 
     // 3. Entidad de Partícula tipada
     class Particle {
