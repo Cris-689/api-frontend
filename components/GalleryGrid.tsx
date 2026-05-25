@@ -123,11 +123,6 @@ export default function GalleryGrid({ images }: { images: ImageMetadata[] }) {
             {selectedImage.descripcion && (
               <p className="text-gray-400 mt-2 text-sm font-light leading-relaxed">{selectedImage.descripcion}</p>
             )}
-            <div className="mt-3 flex items-center justify-center gap-3 text-[11px] font-mono text-purple-400/50 uppercase tracking-wider">
-              <span>{selectedImage.filename}</span>
-              <span>•</span>
-              <span>{selectedImage.mimetype}</span>
-            </div>
           </div>
         </div>
       )}

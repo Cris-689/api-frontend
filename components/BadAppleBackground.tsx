@@ -43,7 +43,7 @@ export default function BadAppleBackground() {
         this.x = Math.random() * canvas!.width;
         this.y = Math.random() * canvas!.height;
         this.size = Math.random() * 15 + 15; // Tamaño entre 15 y 30px
-        this.speedY = Math.random() * 2 + 1; // Velocidad de caída
+        this.speedY = Math.random() * 1.4 + 1; // Velocidad de caída
         this.opacity = Math.random() * 0.5 + 0.3; // Transparencia
         this.rotation = Math.random() * 360;
         this.rotationSpeed = (Math.random() - 0.5) * 2; // Giro aleatorio
