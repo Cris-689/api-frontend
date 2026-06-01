@@ -45,13 +45,13 @@ export default async function RootPage() {
         {/* Lado Izquierdo: Textos e Introducción */}
         <div className="space-y-6 text-center lg:text-left">
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-white">
-            Panel de{' '}
+            {' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">
-              Imágenes
+              Gatetes o Perretes todos son monetes.
             </span>
           </h1>
           <p className="text-lg text-gray-400 max-w-xl mx-auto lg:mx-0 font-light">
-            Plataforma inmutable y segura para la administración centralizada de recursos visuales del clúster Edge.
+            Si clavito pablo un pablito, entonces que clavito clavó pablo
           </p>
 
           {/* Botones de Navegación */}
